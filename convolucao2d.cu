@@ -165,8 +165,13 @@ void naive_convolution(float *input_h, float *output_h, float *mask_h, int width
 int main(void) {
     srand(time(NULL));
 
-    // N x N matrix (1024x1024)
-    int n = 1 << 10;
+    // N x N matrix 
+    // 1 << 10 = 1024x1024
+    // 1 << 11 = 2048x2048
+    // 1 << 12 = 4096x4096
+    // 1 << 13 = 8192x8192
+    // 1 << 14 = 16384x16384 (max)
+    int n = 1 << 14;
 
     float *input  = (float*) malloc(n * n * sizeof(float));
     float *output_gpu_naive = (float*) malloc(n * n * sizeof(float));
@@ -183,7 +188,7 @@ int main(void) {
     for (int i = 0; i < n * n; i++) 
         input[i] = rand() / (float)RAND_MAX;
 
-    // Mask with ones (no change)
+    // Mask with ones (sums the neighborhood)
      for (int i = 0; i < MASK_DIM * MASK_DIM; i++)
         mask[i] = 1.0f;
 
@@ -192,7 +197,6 @@ int main(void) {
 
     // Run GPU tiled
     tiled_convolution(input, output_gpu_tiled, mask, n);
-
 
     // Run CPU convolution and benchmark
     clock_t start = clock();
